@@ -1,0 +1,19 @@
+{
+  "name": "tul-chattie-server",
+  "version": "1.0.0",
+  "description": "Server side of a realtime chatting application.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "dev": "nodemon server"
+  },
+  "author": "Matěj Beran",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^3.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
