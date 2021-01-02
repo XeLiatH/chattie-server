@@ -14,32 +14,41 @@ const io = socketio(server, {
 });
 
 // Establish database connection
-const connection = mysql.createConnection(config.mysql);
-connection.connect();
-
-connection.query('SELECT 1 + 1 AS solution', function (err, rows, fields) {
-    if (err) throw err
-
-    console.log('The solution is: ', rows[0].solution)
-});
-
-connection.end();
+const db = mysql.createConnection(config.mysql);
 
 // Set static folder to public
 app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
 app.get('/users', (req, res) => {
-    res.json([
-        {
-            id: 1,
-            email: "matej.beran@tul.cz"
+    db.query("SELECT * FROM user", (err, data, fields) => {
+        if (err) {
+            res.status(500).json({ error: "Unable to fetch the users. Database issue is at play here." })
         }
-    ]);
+
+        res.status(200).json(data);
+    });
+});
+
+app.post('/users/login', (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        res.status(403).json({ msg: "You have to enter both email and a password." });
+    }
+
+    res.status(201).send();
 });
 
 app.get('/chat/direct', (req, res) => {
-    
+    db.query("SELECT * FROM chat_direct", (err, data, fields) => {
+        if (err) {
+            res.status(500).json({ error: "Unable to fetch the users. Database issue is at play here." })
+        }
+
+        // run the data through foreach and add messages
+
+        res.status(200).json(data);
+    });
 });
 
 app.post('/chat/direct', (req, res) => {
@@ -74,7 +83,7 @@ app.get('/chat/groups/:chatGroupId/messeges', (req, res) => {
     
 });
 
-// some actual code ??
+// Listen for socket connection
 io.on('connection', socket => {
     console.log('Client connected to the f-ing server.');
 
