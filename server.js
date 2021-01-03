@@ -147,6 +147,7 @@ io.on('connection', socket => {
             });
     
             socket.broadcast.emit('users', d);
+            socket.emit('users', d);
         });
     });
 
@@ -161,8 +162,10 @@ io.on('connection', socket => {
     });
 
     socket.on('disconnect', () => {
-
-        onlineUsers = onlineUsers.filter(u => u.s_id !== socket.id);
+        const index = onlineUsers.findIndex(u => u.s_id === socket.id);
+        if (index !== -1) {
+            onlineUsers.splice(index, 1);
+        }
 
         db.query("SELECT id, email, name FROM user", (err, d, fields) => {
             if (err) {
@@ -174,6 +177,7 @@ io.on('connection', socket => {
             });
     
             socket.broadcast.emit('users', d);
+            socket.emit('users', d);
         });
 
         console.log('Client disconnected from the f-ing server.');
